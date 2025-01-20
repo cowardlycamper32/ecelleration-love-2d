@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="LOVE" type="Lua">
+    <CLASSES>
+      <root url="file://F:/LOVE" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
