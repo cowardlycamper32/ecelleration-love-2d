@@ -45,6 +45,8 @@ function createenemy(vp)
             x = math.random(-1, 1),
             y = math.random(-1, 1)
         },
+        speed = math.random(5, 20),
+        dt = 0,
         damageDone = 0
     }
 end
@@ -58,10 +60,20 @@ function initenemy(vp)
         table.insert(enemies, newEnemy)
     end
 end
+    
+
 function drawenemy(enemy)
     love.graphics.setColor(1, 0, 0)
     love.graphics.ellipse("fill", enemy.position.x, enemy.position.y, enemy.size.width / 2, enemy.size.width / 2)
     love.graphics.setColor(1, 1, 1)
+    enemy.position.x = enemy.position.x + (enemy.direction.x * enemy.speed * enemy.dt)
+    enemy.position.y = enemy.position.y + (enemy.direction.y * enemy.speed * enemy.dt)
+    enemy.position, enemy.direction = offscreen(enemy.position, enemy.direction)
+    if math.random(1, 100) == 100 then
+        enemy.direction.x = math.random(-1, 1)
+        enemy.direction.y = math.random(-1, 1)
+    end
+    
 end
 setmetatable(player, {__index = entity})
 function entity.init(self, position, size)
@@ -114,8 +126,6 @@ function offscreen(pos, dir)
         dir.y = 0
     end
     return pos, dir
-        
-        
 end
 function love.update(dt)
     if love.keyboard.isDown("w") then
@@ -142,7 +152,12 @@ function love.update(dt)
     if not (love.keyboard.isDown("a") or  love.keyboard.isDown("d")) and player.direction.x < 0 then
         player.direction.x = player.direction.x + 1
     end
-    
+    for _, enemy in  ipairs(enemies) do
+        enemy.dt = dt
+    end
+    if math.random(1,10) then
+        
+    end
     player:move(20, dt)
     player.position, player.direction = offscreen(player.position, player.direction)
 end 
