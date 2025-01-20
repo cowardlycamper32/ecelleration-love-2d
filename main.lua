@@ -29,22 +29,42 @@ player = {
     },
     health = 100
 }
-enemy = {
-    position = {
-        x = 0,
-        y = 0
-    },
-    size = {
-        width = 0,
-        height = 0
-    },
-    direction = {
-        x = 0,
-        y = 0
-    },
-    damageDone = 0
+function createenemy(vp)
+    size = math.random(10, 30)
+    
+    return {
+        position = {
+            x = math.random(0, vp.width - size),
+            y = math.random(0, vp.height - size)
+        },
+        size = {
+            width = size,
+            height = size
+        },
+        direction = {
+            x = math.random(-1, 1),
+            y = math.random(-1, 1)
+        },
+        damageDone = 0
+    }
+end
+
+enemies = {
 }
-function enemy.init(self, position, size)
+function initenemy(vp) 
+    numofenemies = math.random(1, 20)
+    for i = 1, numofenemies do
+        local newEnemy = createenemy(vp)
+        table.insert(enemies, newEnemy)
+    end
+end
+function drawenemy(enemy)
+    love.graphics.setColor(1, 0, 0)
+    love.graphics.ellipse("fill", enemy.position.x, enemy.position.y, enemy.size.width / 2, enemy.size.width / 2)
+    love.graphics.setColor(1, 1, 1)
+end
+setmetatable(player, {__index = entity})
+function entity.init(self, position, size)
     self.position = position
     self.size = size
     self.direction = {
@@ -59,11 +79,24 @@ end
 
 function love.load()
     wwidth, wheight = love.graphics.getDimensions()
+    veiwport = {
+        width = wwidth,
+        height = wheight
+    }
+    center = {
+        x = wwidth / 2,
+        y = wheight / 2
+    }
+    initenemy(veiwport)
 end
 function love.draw()
-    love.graphics.rectangle("fill", player.position.x, player.position.y, player.size.width, player.size.height)
     love.graphics.print(player.position.x .. ", " .. player.position.y)
     love.graphics.print(player.direction.x .. ", " .. player.direction.y, 0, 20)
+    love.graphics.print("use WASD to move the cube", center.x, center.y)
+    love.graphics.rectangle("fill", player.position.x, player.position.y, player.size.width, player.size.height)
+    for _, enemy in ipairs(enemies) do
+        drawenemy(enemy)
+    end
 end 
 function offscreen(pos, dir)
     if pos.x < 0 then
@@ -110,13 +143,14 @@ function love.update(dt)
         player.direction.x = player.direction.x + 1
     end
     
-    player:move(20, dt) -- for some reason this line of code causes an error. why??
-    
-
+    player:move(20, dt)
     player.position, player.direction = offscreen(player.position, player.direction)
 end 
 function love.keypressed(key)
     if key == "escape" then
         love.event.quit()
+    end
+    if key == "space" then
+        
     end
 end 
