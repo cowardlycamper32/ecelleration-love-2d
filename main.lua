@@ -34,8 +34,8 @@ function createenemy(vp)
     
     return {
         position = {
-            x = math.random(0, vp.width - size),
-            y = math.random(0, vp.height - size)
+            x = math.random(0, vp.width - (size / 2)),
+            y = math.random(0, vp.height - (size / 2))
         },
         size = {
             width = size,
@@ -47,7 +47,9 @@ function createenemy(vp)
         },
         speed = math.random(5, 20),
         dt = 0,
-        damageDone = 0
+        damageDone = 0,
+        speedloops = 0,
+        dirloops = 0
     }
 end
 
@@ -68,10 +70,24 @@ function drawenemy(enemy)
     love.graphics.setColor(1, 1, 1)
     enemy.position.x = enemy.position.x + (enemy.direction.x * enemy.speed * enemy.dt)
     enemy.position.y = enemy.position.y + (enemy.direction.y * enemy.speed * enemy.dt)
-    enemy.position, enemy.direction = offscreen(enemy.position, enemy.direction)
-    if math.random(1, 100) == 100 then
+    enemy.position, enemy.direction = offscreen(enemy.position, enemy.direction, enemy.size.width, enemy.size.height)
+    if enemy.dirloops > 99 then
+        enemy.dirloops = 99
+    end
+    if math.random(1, 200 - enemy.dirloops) == 1 then
         enemy.direction.x = math.random(-1, 1)
         enemy.direction.y = math.random(-1, 1)
+        enemy.dirloops = enemy.dirloops + 1
+    end
+    if enemy.speedloops > 49 then
+        enemy.speedloops = 49
+    end
+    if math.random(1, 50 - enemy.speedloops) == 1 then
+        if enemy.speed > 100 then
+            enemy.speed = 100
+        end
+        enemy.speed = enemy.speed + 1
+        enemy.speedloops = enemy.speedloops + 1
     end
     
 end
@@ -110,19 +126,19 @@ function love.draw()
         drawenemy(enemy)
     end
 end 
-function offscreen(pos, dir)
+function offscreen(pos, dir, sizew, sizeh)
     if pos.x < 0 then
         pos.x = 0
         dir.x = 0
-    elseif pos.x > (wwidth - player.size.width) then
-        pos.x = (wwidth - player.size.width)
+    elseif pos.x > (wwidth - sizew) then
+        pos.x = (wwidth - sizew)
         dir.x = 0
     end
     if pos.y < 0 then
         pos.y = 0
         dir.y = 0
-    elseif pos.y > (wheight - player.size.height) then
-        pos.y = (wheight - player.size.height)
+    elseif pos.y > (wheight - sizeh) then
+        pos.y = (wheight - sizeh)
         dir.y = 0
     end
     return pos, dir
@@ -130,9 +146,13 @@ end
 function love.update(dt)
     if love.keyboard.isDown("w") then
         player.direction.y = player.direction.y - 1
+    elseif love.keyboard.isDown("w") and player.direction.y < 0 and not love.keyboard.isDown("s") then
+        player.direction.y = player.direction.y - 5
     end
     if love.keyboard.isDown("s") then
         player.direction.y = player.direction.y + 1
+    elseif love.keyboard.isDown("s") and player.direction.y > 0 and not love.keyboard.isDown("w") then
+        player.direction.y = player.direction.y + 5
     end
     if love.keyboard.isDown("a") then
         player.direction.x = player.direction.x - 1
@@ -152,20 +172,24 @@ function love.update(dt)
     if not (love.keyboard.isDown("a") or  love.keyboard.isDown("d")) and player.direction.x < 0 then
         player.direction.x = player.direction.x + 1
     end
+    
+        
+    
     for _, enemy in  ipairs(enemies) do
         enemy.dt = dt
+        enemy.position, enemy.direction = offscreen(enemy.position, enemy.direction, enemy.size.width / 2, enemy.size.height / 2)
     end
     if math.random(1,10) then
         
     end
     player:move(20, dt)
-    player.position, player.direction = offscreen(player.position, player.direction)
+    player.position, player.direction = offscreen(player.position, player.direction, player.size.width, player.size.height)
 end 
 function love.keypressed(key)
     if key == "escape" then
         love.event.quit()
     end
     if key == "space" then
-        
+        table.insert(enemies, createenemy(veiwport))
     end
 end 
