@@ -26,6 +26,11 @@ objects = {
                 width = 0,
                 height = 0
             },
+            direction = {
+                x = 0,
+                y = 0
+            },
+            speed = 0,
             color = colors.black
         }
     }
@@ -41,6 +46,48 @@ function addObject(reference, name, Type, drawType, objectData)
         drawType = drawType,
         Data = objectData
     })
+end
+
+function playerInputManager(player)
+    if love.keyboard.isDown("w") then
+        player.Data.position.y = player.Data.position.y - 1
+    end
+    if love.keyboard.isDown("s") then
+        player.Data.position.y = player.Data.position.y + 1
+    end
+    if love.keyboard.isDown("a") then
+        player.Data.position.x = player.Data.position.x - 1
+    end
+    if love.keyboard.isDown("d") then
+        player.Data.position.x = player.Data.position.x + 1
+    end
+    if player.Data.direction.y > 1 then
+        player.Data.direction.y = 1
+    end
+    if player.Data.direction.y < -1 then
+        player.Data.direction.y = -1
+    end
+    if player.Data.direction.x > 1 then
+        player.Data.direction.x = 1
+    end
+    if player.Data.direction.x < -1 then
+        player.Data.direction.x = -1
+    end
+end
+
+function move(object, dt) 
+    object.Data.position.x = object.Data.position.x + (object.Data.speed * object.Data.direction.x) * dt
+    object.Data.position.y = object.Data.position.y + (object.Data.speed * object.Data.direction.y) * dt
+end
+
+function doUpdate(object, dt)
+    if object.ID == 0 then
+        return
+    end
+    if object.reference == "Player" then
+        playerInputManager(object)
+        move(object, dt)
+    end
 end
 
 function doDraw(object)
@@ -72,6 +119,11 @@ function love.load()
             width = 20,
             height = 20
         },
+        direction = {
+            x = 0,
+            y = 0
+        },
+        speed = 400,
         color = colors.white
     })
 end
@@ -79,5 +131,11 @@ end
 function love.draw()
     for _, object in ipairs(objects) do
         doDraw(object)
+    end
+end 
+
+function love.update(dt)
+    for _, object in ipairs(objects) do
+        doUpdate(object, dt)
     end
 end 
