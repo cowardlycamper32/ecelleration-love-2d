@@ -50,16 +50,16 @@ end
 
 function playerInputManager(player)
     if love.keyboard.isDown("w") then
-        player.Data.position.y = player.Data.position.y - 1
+        player.Data.direction.y = player.Data.direction.y - 1
     end
     if love.keyboard.isDown("s") then
-        player.Data.position.y = player.Data.position.y + 1
+        player.Data.direction.y = player.Data.direction.y + 1
     end
     if love.keyboard.isDown("a") then
-        player.Data.position.x = player.Data.position.x - 1
+        player.Data.direction.x = player.Data.direction.x - 1
     end
     if love.keyboard.isDown("d") then
-        player.Data.position.x = player.Data.position.x + 1
+        player.Data.direction.x = player.Data.direction.x + 1
     end
     if player.Data.direction.y > 1 then
         player.Data.direction.y = 1
@@ -73,11 +73,49 @@ function playerInputManager(player)
     if player.Data.direction.x < -1 then
         player.Data.direction.x = -1
     end
+    if not(love.keyboard.isDown("w")) and not(love.keyboard.isDown("s")) then
+        player.Data.direction.y = 0
+    end
+    if not(love.keyboard.isDown("a")) and not(love.keyboard.isDown("d")) then
+        player.Data.direction.x = 0
+    end
+    local length = math.sqrt(player.Data.direction.x^2 + player.Data.direction.y^2)
+    if length > 0 then
+        player.Data.direction.x = player.Data.direction.x / length
+        player.Data.direction.y = player.Data.direction.y / length
+    end
+    
 end
 
 function move(object, dt) 
     object.Data.position.x = object.Data.position.x + (object.Data.speed * object.Data.direction.x) * dt
     object.Data.position.y = object.Data.position.y + (object.Data.speed * object.Data.direction.y) * dt
+end
+
+function boundsCheck(object)
+    if object.Data.position.x < 0 then
+        object.Data.position.x = 0
+        object.Data.direction.x = 0
+    elseif object.Data.position.x > objects[2].Data.size.width - object.Data.size.width then
+        object.Data.position.x = objects[2].Data.size.width - object.Data.size.width
+        object.Data.direction.x = 0
+    end
+    if object.Data.position.y < 0 then
+        object.Data.position.y = 0
+        object.Data.direction.y = 0
+    elseif object.Data.position.y > objects[2].Data.size.height - object.Data.size.height then
+        object.Data.position.y = objects[2].Data.size.height - object.Data.size.height
+        object.Data.direction.y = 0
+    end
+        
+end
+
+function updateEnemy(enemy) 
+    
+end
+
+function generateEnemy(enemy) 
+    
 end
 
 function doUpdate(object, dt)
@@ -87,23 +125,34 @@ function doUpdate(object, dt)
     if object.reference == "Player" then
         playerInputManager(object)
         move(object, dt)
+        boundsCheck(object)
+    elseif object.reference == "enemies" then
+        for _, enemy in pairs(object.Data) do
+            
+        end
     end
+        
 end
 
 function doDraw(object)
     if object.ID == 0 then
         return
     end
-    
+        
     love.graphics.setColor(object.Data.color.r, object.Data.color.g, object.Data.color.b)
-    
+
     if object.Type == "rectangle" then
-        
+
         love.graphics.rectangle(object.drawType, object.Data.position.x, object.Data.position.y, object.Data.size.width, object.Data.size.width)
-        
+
     elseif object.Type == "elipse" then
         love.graphics.elipse(object.drawType, object.Data.position.x, object.Data.position.y, object.Data.size.width / 2, object.Data.size.height / 2)
+    elseif object.Type == "text" then
+        if object.reference == "playerVel" then
+            love.graphics.print(objects[2].Data.direction.x .. "," .. objects[2].Data.direction.y, object.Data.position.x, object.Data.position.y)
+        end
     end
+        
     
     love.graphics.setColor(objects[1].Data.color.r, objects[1].Data.color.g, objects[1].Data.color.b)
 end
@@ -123,7 +172,24 @@ function love.load()
             x = 0,
             y = 0
         },
-        speed = 400,
+        speed = 1000,
+        color = colors.white
+    })
+    addObject("enemies", "Enemies", "table", 0, {})
+    addObject("playerVel", "Player Velocity thingie", "text" , 0, {
+        position = {
+            x = 0,
+            y = 0
+        },
+        size = {
+            width = 0,
+            height = 0
+        },
+        direction = {
+            x = 0,
+            y = 0
+        },
+        speed = 0,
         color = colors.white
     })
 end
