@@ -9,6 +9,11 @@ colors = {
         r = 1,
         g = 1,
         b = 1
+    },
+    red = {
+        r = 1,
+        g = 0,
+        b = 0
     }
 }
 objects = {
@@ -34,6 +39,30 @@ objects = {
             color = colors.black
         }
     }
+}
+
+InitialEnemies = {
+    ID = 0,
+    reference = "enemy01",
+    name = "Enemy",
+    Type = "elipse",
+    Data = {
+        position = {
+            x = math.random(0, objects[1].Data.size.width - 20 / 2),
+            y = math.random(0, objects[1].Data.size.width - 20 / 2)
+        },
+        size = {
+            width = 20 / 2,
+            height = 20 / 2
+        },
+        direction = {
+            x = 0,
+            y = 0
+        },
+        speed = 0,
+        color = colors.red
+    }
+
 }
 
 function addObject(reference, name, Type, drawType, objectData) 
@@ -110,8 +139,9 @@ function boundsCheck(object)
         
 end
 
-function updateEnemy(enemy) 
-    
+function updateEnemy(enemy, dt)
+    enemy.Data.position.x = enemy.Data.position.x + (enemy.Data.speed * enemy.Data.direction.x) * dt
+    enemy.Data.position.y = enemy.Data.position.y + (enemy.Data.speed * enemy.Data.direction.y) * dt
 end
 
 function generateEnemy(enemy) 
@@ -128,7 +158,7 @@ function doUpdate(object, dt)
         boundsCheck(object)
     elseif object.reference == "enemies" then
         for _, enemy in pairs(object.Data) do
-            
+            updateEnemy(enemy, dt)
         end
     end
         
@@ -138,9 +168,13 @@ function doDraw(object)
     if object.ID == 0 then
         return
     end
-        
-    love.graphics.setColor(object.Data.color.r, object.Data.color.g, object.Data.color.b)
-
+    if not(object.reference == "enemies") then
+        love.graphics.setColor(object.Data.color.r, object.Data.color.g, object.Data.color.b)
+    else
+        for _, enemy in pairs(object) do
+            doDraw(enemy)
+        end
+    end
     if object.Type == "rectangle" then
 
         love.graphics.rectangle(object.drawType, object.Data.position.x, object.Data.position.y, object.Data.size.width, object.Data.size.width)
@@ -152,8 +186,8 @@ function doDraw(object)
             love.graphics.print(objects[2].Data.direction.x .. "," .. objects[2].Data.direction.y, object.Data.position.x, object.Data.position.y)
         end
     end
-        
-    
+
+
     love.graphics.setColor(objects[1].Data.color.r, objects[1].Data.color.g, objects[1].Data.color.b)
 end
 
@@ -175,7 +209,7 @@ function love.load()
         speed = 1000,
         color = colors.white
     })
-    addObject("enemies", "Enemies", "table", 0, {})
+    addObject("enemies", "Enemies", "table", 0, {InitialEnemies})
     addObject("playerVel", "Player Velocity thingie", "text" , 0, {
         position = {
             x = 0,
