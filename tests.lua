@@ -1,0 +1,1 @@
+print(package.config:sub(1,1))

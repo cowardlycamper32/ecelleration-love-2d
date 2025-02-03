@@ -56,7 +56,7 @@ ControllableObjects = {}
 MovingObjects = {}
 
 enemyStateText = "neutral"
-
+DebugMode = false
 
 
 function playerEnemyColCheck(CObject, MObject)
@@ -183,43 +183,35 @@ function fixRandomAcceleration(object)
         object.Data.direction.y = -1
     end
 end
+
 xValue = 50
 yValue = 50
 resetValue = 200
 honeValue = 1
+
 function updateEnemy(enemy)
     if math.random(1, xValue) == 50 then
         x1 = math.random(-1, 1)
         enemy.Data.direction.x = x1
-        if pcall(StaticObjects[3]) then
-            StaticObjects[3].Data.contents = "x - moving " .. x1
-        end
+        StaticObjects[3].Data.contents = "x - moving " .. x1
     end
     if math.random(1, yValue) == 50 then
         y1 = math.random(-1, 1)
         enemy.Data.direction.y = y1
-        if pcall(StaticObjects[4]) then
-            StaticObjects[4].Data.contents = "y - moving " .. y1
-        end
+        StaticObjects[4].Data.contents = "y - moving " .. y1
     end
     if math.random(1, resetValue) == 200 then
         enemy.Data.direction.x = 0
         enemy.Data.direction.y = 0
-        if pcall(StaticObjects[3]) then
-            StaticObjects[3].Data.contents = "x - neutral"
-        end
-        if pcall(StaticObjects[4]) then
-            StaticObjects[4].Data.contents = "y - neutral"
-        end
+        StaticObjects[3].Data.contents = "x - neutral"
+        
+        StaticObjects[4].Data.contents = "y - neutral"
+        
     end
     if math.random(honeValue, 1000) == 1000 then
         honeValue = 1000
-        if pcall(StaticObjects[3]) then
-            StaticObjects[3].Data.contents = "x - HONE"
-        end
-        if pcall(StaticObjects[4]) then
-            StaticObjects[4].Data.contents = "y - HONE"
-        end
+        StaticObjects[3].Data.contents = "x - HONE"
+        StaticObjects[4].Data.contents = "y - HONE"
         xValue = 1
         yValue = 1
         resetValue = 1
@@ -253,9 +245,9 @@ function doDraw(object)
     if object.ID == 0 then
         return
     end
-    if object.visible == True then
+    if object.visible == true then
         love.graphics.setColor(object.Data.color.r, object.Data.color.g, object.Data.color.b)
-    elseif object.visible == False then
+    elseif object.visible == false then
         love.graphics.setColor(StaticObjects[1].Data.color.r, StaticObjects[1].Data.color.g, StaticObjects[1].Data.color.b)
     else
         love.event.quit()
@@ -296,7 +288,7 @@ function love.load()
         },
         speed = 100,
         color = colors.white,
-        visible = True
+        visible = true
     })
     addMovingObject("enemy01", "Enemy#1", "ellipse", "fill", {
         position = {
@@ -313,7 +305,7 @@ function love.load()
         },
         speed = 20,
         color = colors.red,
-        visible = True
+        visible = true
     })
     addMovingObject("enemy02", "Enemy#2", "ellipse", "fill", {
         position = {
@@ -330,7 +322,60 @@ function love.load()
         },
         speed = 20,
         color = colors.red,
-        visible = True
+        visible = true
+    })
+    addStaticObject("playerVel", "Player Velocity thingie", "text" , 0, {
+        position = {
+            x = 0,
+            y = 0
+        },
+        size = {
+            width = 0,
+            height = 0
+        },
+        direction = {
+            x = 0,
+            y = 0
+        },
+        speed = 0,
+        color = colors.white,
+        visible = false
+    })
+    addStaticObject("enemyStateX", "Enemy State X Display", "text", 0, {
+        position = {
+            x = StaticObjects[1].Data.size.width / 2 - 70,
+            y = StaticObjects[1].Data.size.width / 2
+        },
+        size = {
+            width = 0,
+            height = 0
+        },
+        direction = {
+            x = 0,
+            y = 0
+        },
+        speed = 0,
+        color = colors.white,
+        contents = "y - neutral",
+        visible = false
+    })
+    addStaticObject("enemyStateY", "Enemy State Y Display", "text", 0, {
+        position = {
+            x = StaticObjects[1].Data.size.width / 2 + 60,
+            y = StaticObjects[1].Data.size.width / 2
+        },
+        size = {
+            width = 0,
+            height = 0
+        },
+        direction = {
+            x = 0,
+            y = 0
+        },
+        speed = 0,
+        color = colors.white,
+        contents = "x - neutral",
+        visible = false
     })
 end
 
@@ -367,137 +412,21 @@ function love.update(dt)
 
     end
 end
-correctKeys = 0
 
 function DebugON()
-    DebugMode = True
-    addStaticObject("playerVel", "Player Velocity thingie", "text" , 0, {
-        position = {
-            x = 0,
-            y = 0
-        },
-        size = {
-            width = 0,
-            height = 0
-        },
-        direction = {
-            x = 0,
-            y = 0
-        },
-        speed = 0,
-        color = colors.white,
-        visible = True
-    })
-    addStaticObject("enemyStateX", "Enemy State X Display", "text", 0, {
-        position = {
-            x = StaticObjects[1].Data.size.width / 2 - 70,
-            y = StaticObjects[1].Data.size.width / 2
-        },
-        size = {
-            width = 0,
-            height = 0
-        },
-        direction = {
-            x = 0,
-            y = 0
-        },
-        speed = 0,
-        color = colors.white,
-        contents = "y - neutral",
-        visible = True
-    })
-    addStaticObject("enemyStateY", "Enemy State Y Display", "text", 0, {
-        position = {
-            x = StaticObjects[1].Data.size.width / 2 + 60,
-            y = StaticObjects[1].Data.size.width / 2
-        },
-        size = {
-            width = 0,
-            height = 0
-        },
-        direction = {
-            x = 0,
-            y = 0
-        },
-        speed = 0,
-        color = colors.white,
-        contents = "x - neutral",
-        visible = True
-    })
+    if DebugMode == true then
+        return
+    end
+    DebugMode = true
+    
 end
 
 function love.keypressed(key)
     if key == "escape" then
         love.event.quit()
     end
-    if key == "up" or correctKeys == 1 then
-        if correctKeys == 0 then
-            correctKeys = correctKeys + 1
-        end
-        if key == "up" or correctKeys == 2 then
-            if correctKeys == 1 then
-                correctKeys = correctKeys + 1
-            end
-            if key == "down" or correctKeys == 3 then
-                if correctKeys == 2 then
-                    correctKeys = correctKeys + 1
-                end
-                if key == "down" or correctKeys == 4 then
-                    if correctKeys == 3 then
-                        correctKeys = correctKeys + 1
-                    end
-                    if key == "left" or correctKeys == 5 then
-                        if correctKeys == 4 then
-                            correctKeys = correctKeys + 1
-                        end
-                        if key == "right" or correctKeys == 6 then
-                            if correctKeys == 5 then
-                                correctKeys = correctKeys + 1
-                            end
-                            if key == "left" or correctKeys == 7 then
-                                if correctKeys == 6 then
-                                    correctKeys = correctKeys + 1
-                                end
-                                if key == "right" or correctKeys == 8 then
-                                    if correctKeys == 7 then
-                                        correctKeys = correctKeys + 1
-                                    end
-                                    if DebugMode then
-                                        print("No need, debug is enabled")
-                                    else
-                                        debugON()
-                                    end
-                                else
-                                    DebugMode = False
-                                    correctKeys = 0
-                                end
-                            else
-                                DebugMode = False
-                                correctKeys = 0
-                            end
-                        else
-                            DebugMode = False
-                            correctKeys = 0
-                        end
-                    else
-                        DebugMode = False
-                        correctKeys = 0
-                    end
-                else
-                    DebugMode = False
-                    correctKeys = 0
-                end
-            else
-                DebugMode = False
-                correctKeys = 0
-            end
-        else
-            DebugMode = False
-            correctKeys = 0
-        end
-    else
-        DebugMode = False
-        correctKeys = 0
+    if key == "kp5" then
+        DebugON()
     end
 
 end
