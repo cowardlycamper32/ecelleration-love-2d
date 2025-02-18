@@ -249,7 +249,7 @@ function doDraw(object)
     if object.visible == 1 then
         love.graphics.setColor(object.Data.color.r, object.Data.color.g, object.Data.color.b)
     else
-        love.graphics.setColor(colors.red.r, colors.red.g, colors.red.b)
+        love.graphics.setColor(colors.blue.r, colors.blue.g, colors.blue.b)
     end
     if object.Type == "rectangle" then
 
