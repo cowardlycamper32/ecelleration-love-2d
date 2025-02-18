@@ -48,7 +48,8 @@ StaticObjects = {
                 y = 0
             },
             speed = 0,
-            color = colors.black
+            color = colors.black,
+            visible = 1
         }
     }
 }
@@ -245,12 +246,10 @@ function doDraw(object)
     if object.ID == 0 then
         return
     end
-    if object.visible == true then
+    if object.visible == 1 then
         love.graphics.setColor(object.Data.color.r, object.Data.color.g, object.Data.color.b)
-    elseif object.visible == false then
-        love.graphics.setColor(StaticObjects[1].Data.color.r, StaticObjects[1].Data.color.g, StaticObjects[1].Data.color.b)
     else
-        love.event.quit()
+        love.graphics.setColor(colors.red.r, colors.red.g, colors.red.b)
     end
     if object.Type == "rectangle" then
 
@@ -288,7 +287,7 @@ function love.load()
         },
         speed = 100,
         color = colors.white,
-        visible = true
+        visible = 1
     })
     addMovingObject("enemy01", "Enemy#1", "ellipse", "fill", {
         position = {
@@ -305,7 +304,7 @@ function love.load()
         },
         speed = 20,
         color = colors.red,
-        visible = true
+        visible = 1
     })
     addMovingObject("enemy02", "Enemy#2", "ellipse", "fill", {
         position = {
@@ -322,7 +321,7 @@ function love.load()
         },
         speed = 20,
         color = colors.red,
-        visible = true
+        visible = 1
     })
     addStaticObject("playerVel", "Player Velocity thingie", "text" , 0, {
         position = {
@@ -339,7 +338,7 @@ function love.load()
         },
         speed = 0,
         color = colors.white,
-        visible = false
+        visible = 0
     })
     addStaticObject("enemyStateX", "Enemy State X Display", "text", 0, {
         position = {
@@ -357,7 +356,7 @@ function love.load()
         speed = 0,
         color = colors.white,
         contents = "y - neutral",
-        visible = false
+        visible = 0
     })
     addStaticObject("enemyStateY", "Enemy State Y Display", "text", 0, {
         position = {
@@ -375,7 +374,7 @@ function love.load()
         speed = 0,
         color = colors.white,
         contents = "x - neutral",
-        visible = false
+        visible = 0
     })
 end
 
